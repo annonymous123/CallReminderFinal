@@ -84,6 +84,7 @@ public class CallSetter implements Runnable,VariableSetter{
 				  String pid=(String) row[2];
 				  int alertType=(Integer) row[3];
 				  r.resetReminder(pid, pname, preferLanguage, alertType);
+				  							//System.out.println(pid+"\n"+pname+"\n"+preferLanguage+"\n"+alertType);
 				  if(results.hasNext())
 					  row=(Object[]) results.next();
 				  else break;

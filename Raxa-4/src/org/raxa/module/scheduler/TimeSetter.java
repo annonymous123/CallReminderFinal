@@ -1,5 +1,5 @@
 /*
- * This Class will ping database after every two mins(DATABASE_PINGING_INTERVAL) and schedule all thread to call 
+ * This Class will ping database after every two mins(DATABASE_PINGING_INTERVAL) and schedulgie all thread to call 
  * patient where patient scheduleTime falls between that time Zone.Pinging time can be changed easily 
  * by changing DATABASE_PINGING_INTERVAL 
  * 
