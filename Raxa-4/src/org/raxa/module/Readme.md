@@ -14,5 +14,8 @@ under name "header1" and play that file
 had the "mode' been 1 it would have played it using TTS.
 
 
+Note:Folder SoundConverter is of no use.
+
+
 
 
