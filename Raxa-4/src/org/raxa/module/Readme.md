@@ -1,4 +1,4 @@
-The code is independednt of any TTS or audio voice.
+The code is modular and support any TTS as long as its take a 'string to convert','language' and play the voice
 
 Morever its flexible and provides option how each word is going to be converted to 
 voice(either using TTS or pre recorded voice)
