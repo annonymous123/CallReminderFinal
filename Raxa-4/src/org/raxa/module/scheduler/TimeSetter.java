@@ -16,7 +16,7 @@ import java.util.Properties;
 
 public class TimeSetter{
 
-	 public static void main(String args[]){
+	 public void startMedicineRemiderService(){
 		Properties prop = new Properties();
 		int THREAD_POOL_DATABASE=1;int DATABASE_POLLING_INTERVAL=2;
     	try {

@@ -79,9 +79,9 @@ public class Outgoing{
     }
     		
     
-    public boolean callPatient(String pnumber,String msgId,String aid,String preferLanguage){	
-    	
-    	pnumber="SIP/1000abc"; //will change to phonenumber once we have outgoing call facility.
+    public boolean callPatient(String pnumber,String msgId,String aid,String preferLanguage){
+        logger.info("Placing the call to patient with phone number-"+pnumber+" having alertId-"+aid+" and msgId-"+msgId+" and preferLanguage "+preferLanguage);
+    	pnumber="SIP/1000abc"; 							//Should be deleted.only for testing purpose
     	Map<String,String> var=new HashMap<String,String>();
     	var.put("msgId",msgId);
     	var.put("aid",aid);
@@ -93,7 +93,7 @@ public class Outgoing{
 	        managerConnection.login();
 	        originateAction = new OriginateAction();
 	        originateAction.setCallerId(CALLERID);
-	        originateAction.setChannel(pnumber);
+	        originateAction.setChannel(pnumber);        //should be updated dahdi/go/pnumber
 	        originateAction.setContext(CONTEXT);
 	        originateAction.setExten(EXTENSION);
 	        originateAction.setPriority(new Integer(1));
@@ -101,6 +101,7 @@ public class Outgoing{
 	        originateAction.setAsync(true);
 	        originateAction.setVariables(var);
 	        originateResponse = managerConnection.sendAction(originateAction,10000);
+	        logger.info("Asterisk response for call to phone-"+pnumber);
 	        logger.info(originateResponse.getResponse());
 	        managerConnection.logoff();
 	        return true;
@@ -129,13 +130,14 @@ public class Outgoing{
     	String defaultLanguage=null;
     	Properties prop = new Properties();
 		try{
+		logger.info("Trying to fetch the notation for the prefer language:"+preferLanguage);
 		prop.load(Caller.class.getClassLoader().getResourceAsStream("tts.properties"));
 		defaultLanguage=prop.getProperty("default");
 		return(prop.getProperty(preferLanguage.toLowerCase(),defaultLanguage));
 		}
 		catch (IOException ex) {
     		ex.printStackTrace();
-    		logger.error("Unable to set prefer language");
+    		logger.error("Unable to set prefer language:"+preferLanguage);
     		return defaultLanguage;
         }
     }

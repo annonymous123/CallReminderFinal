@@ -85,12 +85,14 @@ public class RestCall {
             logger.info("Executing request: " + httpGet.getRequestLine());
             
            response = httpclient.execute(httpGet,responseHandler);
+         //  System.out.println(response);
       		/*   ObjectMapper m=new ObjectMapper();
 			JsonNode rootNode = m.readTree(new File("resource/reminder.json"));
 			return(rootNode.toString());
 			*/
         } 
         catch(Exception ex){
+        	logger.error("Unable to make rest Get Call");
         	ex.printStackTrace();
         	return null;
         }

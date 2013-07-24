@@ -7,7 +7,7 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		List<String> a=new ArrayList<String>();
+/*		List<String> a=new ArrayList<String>();
 		a.add("hello Atul Good Morning");
 		a.add("Today you have to take");
 		a.add("3 tablets of");
@@ -16,6 +16,11 @@ public class Test {
 		EnglishTTS b=new EnglishTTS();
 		if(b.convertToSpeech(a, s))
 			System.out.println("Suuccess");
+*/		String a="aadada";
+		String c=a.replace(" ", "+");
+		System.out.println(c);
+		String[] b=a.split(" ");
+		System.out.println(b[0]);
 	}
 
 }

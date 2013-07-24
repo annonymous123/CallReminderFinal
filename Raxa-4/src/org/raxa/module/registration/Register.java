@@ -53,7 +53,7 @@ public class Register implements VariableSetter {
 	public boolean addReminder(String pid,String preferLanguage,int alertType){
 		
 		if(checkIfPatientExist(pid,alertType)){
-			logger.info("Patient Already Exist");
+			logger.info("Patient with id:"+pid+" already exist for the alertTye"+alertType);
 			return false;
 		}
 		else{
@@ -62,6 +62,7 @@ public class Register implements VariableSetter {
 		}
 		
 		if((getPatient(pid)!=null) || addPatient(pid,preferLanguage)){
+			logger.info("Patient with id:"+pid+"successfully added");
 			return true;
 		}
 		
@@ -93,8 +94,8 @@ public class Register implements VariableSetter {
 		return false;
 	}
 	
-	public boolean addPatient(String pid,String preferLanguage){   //set Name Also
-		List<String> info=getPatientNameAndNumberFromRest(pid);  //info.get(1) will be name info.get(2) will be   //UNMARK THIS
+	public boolean addPatient(String pid,String preferLanguage){   
+		List<String> info=getPatientNameAndNumberFromRest(pid);  
 		Patient patient=null;
 		if(!(info.equals(null)&& info.size()>1)){
 			try{
@@ -120,6 +121,7 @@ public class Register implements VariableSetter {
 	
 			
 	public boolean deleteReminder(String pid,int alertType){
+		logger.error("Deleting the patient with patient id:"+pid+" for alert:"+alertType);
 		boolean deletePatient=false;PAlert patientAlert=null;
 		Patient patient=getPatient(pid);
 		List list=getpatientAlert(pid,alertType);
@@ -165,24 +167,27 @@ public class Register implements VariableSetter {
 	
 	public List<String> getPatientNameAndNumberFromRest(String pid){
 		try{
+			logger.info("Trying to get patient name and number where id:"+pid);
 			List<String> a=new ArrayList<String>();
 			String query=patientQuery+pid+patientFullQuery;
 			ObjectMapper m=new ObjectMapper();
 			JsonNode rootNode = m.readTree(RestCall.getRequestGet(query));
-			JsonNode patient = rootNode.get("result");
+			
 				
 			try{
-				a.add(patient.path("person").path("display").textValue());
+				a.add(rootNode.path("person").path("display").textValue());
+				
 			}
 			catch(Exception ex){
 				logger.warn("name not found for patient with uuid "+pid);
 				a.add(null);
 			}
 			
-			JsonNode attribute=patient.path("person").get("attributes");
+			JsonNode attribute=rootNode.path("person").get("attributes");
 			for(int i=0;i<attribute.size();i++)
 				if((attribute.get(i).path("attributeType").path("uuid").textValue()).equals(contactUUID))
 					a.add(attribute.get(i).path("value").textValue());
+			
 			return a;
 		}
 		
@@ -194,6 +199,7 @@ public class Register implements VariableSetter {
 	}
 	
 	public Patient getPatient(String pid){
+		logger.info("Extracting patient information with id:"+pid);
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		Patient patient = (Patient) session.get(Patient.class,pid);
@@ -203,6 +209,7 @@ public class Register implements VariableSetter {
 	}
 	
 	public List getpatientAlert(String pid,int alertType){
+		logger.info("Extracting patient information with id:"+pid+"alertType:"+alertType);
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		String hql="from PAlert where pid=:pid and alertType=:alertType";
 		session.beginTransaction();
@@ -216,6 +223,7 @@ public class Register implements VariableSetter {
 	}
 	
 	public List getpatientAllAlert(String pid){
+		logger.info("Getting patient alert of pid:"+pid);
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		String hql="from PAlert where pid=:pid";
 		session.beginTransaction();

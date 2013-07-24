@@ -15,7 +15,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.commons.io.FileUtils;
-import java.util.List;
 import org.apache.log4j.Logger;
 
 
@@ -24,6 +23,7 @@ public class EnglishTTS {
 	private String queryPrefix;
 	private String queryPostfix;
 	private String query;
+	private String baseFolder;
 	static Logger logger = Logger.getLogger(EnglishTTS.class);
 	/*
 	 * Now using http://tts-api.com.The code may have to change entirely if TTS is changed.
@@ -32,19 +32,19 @@ public class EnglishTTS {
 		URL="http://tts-api.com/tts.mp3";
 		queryPrefix="?q=";
 		queryPostfix="&return_url=1";
+		baseFolder="n";
 	}
 	
-	public boolean convertToSpeech(List<String> stringToConvert,String folderLocation){
+	public boolean convertToSpeech(String stringToConvert,String folderLocation){
 		try{
 			logger.info("Downloading Voice File");
-			for(int i=0;i<stringToConvert.size();i++){
-				String string=stringToConvert.get(i);
-				string=string.replace(' ', '+');
-				query=URL+queryPrefix+string+queryPostfix;
-				URL url = new URL(getmp3DownloadURL(query));
-				String fileLocation=folderLocation+"/"+(i+1)+".mp3";
-				FileUtils.copyURLToFile(url,new File(fileLocation));
-			}
+			
+			String string=stringToConvert.replace(' ', '+');
+			query=URL+queryPrefix+string+queryPostfix;
+			URL url = new URL(getmp3DownloadURL(query));
+			String fileLocation=baseFolder+"/"+folderLocation;
+			FileUtils.copyURLToFile(url,new File(fileLocation));
+			
 		}
 		catch(Exception ex){
 			logger.error("Error Occured while downloading");

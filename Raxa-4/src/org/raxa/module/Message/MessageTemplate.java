@@ -8,6 +8,12 @@
  * is stored as tagName. eg in hindi.properties we have header1=/home/atul/Documents/voice/greetings/hindi/header1.mp3
  * 5)if mode not found default is 1
  * 6)considering mode of dose and medicine name to be 1.
+ * 
+ * CAUTION:
+ * 		1)Any type of symbols like ',' '.' is highly discouraged as it will make the tts to stop executig that line
+ * 		2)Medicine name should be send as lowercase otherwise the TTS will pronounce each Letter of the word.
+ *      3)For more clarity its advise to use number as word rather than symbol like 'six' instead of '6'.
+ *
  */
 
 package org.raxa.module.Message;
@@ -28,9 +34,10 @@ public class MessageTemplate implements VariableSetter {
 		private Logger logger = Logger.getLogger(this.getClass());
 		private List<String> Tmessage;
 		private String medicineDose;
-		private String medicine;
+		private String medicine;			//should be in lowerCase
 		private String tabletOrVolume;  // either "tablet" or volume;
 		private String name; 
+		private boolean isTablet;
 		public MessageTemplate(){
 			
 		}
@@ -41,9 +48,8 @@ public class MessageTemplate implements VariableSetter {
 		 * <header1>:Greetings(eg.Welcome to Raxa.Good Morning)
 		 * <name>:Name of the Patient
 		 * <header2>:Introductory Line (eg.Today You have to take)
-		 * <doze>:doze of Medicine(Solid)
-		 * <volume>:Tea Spoon(Liquid)
-		 * <medicine>:Name of <Medicine>
+		 * <dose>:doze of Medicine(Solid)
+		 *<tabletOrVolume>
 		 * <footer1>:Language Specific (eg:(in Hindi) lena hai)
 		 * <ending>:Good-Bye Message (eg.We hope you will get well soon.GoodBye)
 		 */
@@ -57,6 +63,7 @@ public class MessageTemplate implements VariableSetter {
 			String header1,header2,footer1,ending;
 			int header1mode,header2mode,footer1mode,endingmode,tabletOrVolumemode;
 			try{
+				logger.info("Trying to get mode in which the words should be spoken from "+propertyFile);
 				prop.load(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
 				header1mode=Integer.parseInt(prop.getProperty("header1mode",String.valueOf(TTS_MODE)));  //If headerMode not provided it will use TTS
 				header2mode=Integer.parseInt(prop.getProperty("header2mode",String.valueOf(TTS_MODE)));
@@ -70,6 +77,7 @@ public class MessageTemplate implements VariableSetter {
 			}
 			
 			try{
+				logger.info("Setting the content of the message"+propertyFile);
 				prop.load(this.getClass().getClassLoader().getResourceAsStream("english.properties"));
 				header1=prop.getProperty("header1Text",null);
 				header2=prop.getProperty("header2Text",null);
@@ -79,12 +87,17 @@ public class MessageTemplate implements VariableSetter {
 				Tmessage.add(convertToJsonString(new ContentFormat("name",name,TTS_MODE)));
 				Tmessage.add(convertToJsonString(new ContentFormat("header2",header2,header2mode)));
 				Tmessage.add(convertToJsonString(new ContentFormat("dose",medicineDose,TTS_MODE)));
-				Tmessage.add(convertToJsonString(new ContentFormat("tabletOrVolume",tabletOrVolume,tabletOrVolumemode)));
-				Tmessage.add(convertToJsonString(new ContentFormat("medicine",medicine,TTS_MODE)));
+				if(isTablet)
+					tabletOrVolume="tablet";
+				else tabletOrVolume="volume";
+					
+				Tmessage.add(convertToJsonString(new ContentFormat(tabletOrVolume,tabletOrVolume+ "of",tabletOrVolumemode)));
+				Tmessage.add(convertToJsonString(new ContentFormat("medicine",medicine.toLowerCase(),TTS_MODE)));
 				Tmessage.add(convertToJsonString(new ContentFormat("footer1",footer1,footer1mode)));
 				Tmessage.add(convertToJsonString(new ContentFormat("ending",ending,endingmode)));
 			}
 			catch(IOException ex) {
+				logger.error("Unable to set the content of the message fro patient"+pid+" with message "+message);
 				Tmessage=null;
 				return null;
 			}
@@ -97,19 +110,19 @@ public class MessageTemplate implements VariableSetter {
 			String separator=" ";
 			String[] content=message.split(separator);
 			medicineDose=content[1];
-			String lastWordBeforeMedicineName=" of ";
+			String lastWordBeforeMedicineName=" of "; // of y
 			int indexOfMedicine=message.lastIndexOf(lastWordBeforeMedicineName)+lastWordBeforeMedicineName.length();   //Since medicine can be of two or more words
 			medicine=message.substring(indexOfMedicine, message.length());
-			tabletOrVolume=checkIfTabletOrVolume(medicine);
+			isTablet=checkIfTabletOrVolume(medicine);
 		}
 		
 		/*
 		 * return either "tablet" or "volume".Right now the template does not provide the info.
 		 * Will change according to template of message;
 		 */
-		public String checkIfTabletOrVolume(String medicine){
-			//return "volume of"
-			return "tablet of";					
+		public boolean checkIfTabletOrVolume(String medicine){
+			//return fales if volume
+			return true;					
 		}
 		
 		public String convertToJsonString(ContentFormat format){

@@ -61,8 +61,6 @@ public class RegionalLanguageParser {
 			}
 		}
 		RegionalVoicefileLocation.add(getFileLocation("EndGreeting"));
-		
-		return RegionalVoicefileLocation;
 	}
 	
 	

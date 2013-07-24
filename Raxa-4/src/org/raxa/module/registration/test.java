@@ -16,8 +16,9 @@ public class test {
 	*/
 	
 			Register r=new Register();
-		System.out.println(r.addReminder("123456789", "hindi", 1));
-
-	
+	//	System.out.println(r.addReminder("123456789", "hindi", 1));
+		//		List a=r.getPatientNameAndNumberFromRest("760aa2d7-2084-4fa5-a46e-5225bc1b1eb8");
+		//		System.out.println(a);
+			r.deleteReminder("123456789ufddsw", 2);
 	}
 }
